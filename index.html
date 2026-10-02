@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMOTION LAB 3D</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#03050a;
+    color:#fff;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+/* FONDO */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      linear-gradient(rgba(0,255,255,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,255,255,.035) 1px,transparent 1px);
+    background-size:35px 35px;
+    pointer-events:none;
+}
+
+header{
+    padding:20px;
+    text-align:center;
+    border-bottom:1px solid #15343b;
+    background:#050a10cc;
+    backdrop-filter:blur(10px);
+}
+
+header h1{
+    color:#00ffff;
+    text-shadow:0 0 15px #00ffff;
+    letter-spacing:5px;
+}
+
+header p{
+    color:#77999d;
+    margin-top:8px;
+}
+
+/* CONTENEDOR */
+.app{
+    max-width:1400px;
+    margin:auto;
+    padding:20px;
+}
+
+/* EMOCIONES */
+.emotions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:20px;
+}
+
+.emotions button{
+    background:#071017;
+    color:#fff;
+    border:1px solid #16424a;
+    padding:12px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.emotions button:hover,
+.emotions button.active{
+    background:#00ffff22;
+    border-color:#00ffff;
+    box-shadow:0 0 15px #00ffff55;
+    transform:translateY(-2px);
+}
+
+/* GRID */
+.dashboard{
+    display:grid;
+    grid-template-columns:1fr 1.4fr 1fr;
+    gap:18px;
+}
+
+.panel{
+    background:#060b12e8;
+    border:1px solid #17343c;
+    border-radius:15px;
+    padding:18px;
+    box-shadow:0 0 25px #000;
+}
+
+.panel h2{
+    color:#00ffff;
+    font-size:16px;
+    margin-bottom:15px;
+}
+
+/* CUERPO 3D */
+.body-area{
+    min-height:600px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    perspective:1000px;
+    overflow:hidden;
+}
+
+.human{
+    position:relative;
+    width:230px;
+    height:500px;
+    transform-style:preserve-3d;
+    animation:float 5s ease-in-out infinite;
+}
+
+@keyframes float{
+    0%,100%{transform:rotateY(-8deg) translateY(0)}
+    50%{transform:rotateY(8deg) translateY(-8px)}
+}
+
+.head{
+    position:absolute;
+    width:105px;
+    height:125px;
+    left:62px;
+    top:10px;
+    border:3px solid #00ffff;
+    border-radius:48% 48% 45% 45%;
+    background:radial-gradient(circle,#102c35,#071017);
+    box-shadow:0 0 25px #00ffff55;
+}
+
+.brain{
+    position:absolute;
+    width:75px;
+    height:55px;
+    left:15px;
+    top:28px;
+    border:2px solid #ff4fd8;
+    border-radius:50%;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 8px,
+        #ff4fd855 9px 11px
+      );
+    box-shadow:0 0 20px #ff4fd855;
+    animation:brain 1.5s infinite alternate;
+}
+
+@keyframes brain{
+    from{filter:brightness(.8)}
+    to{filter:brightness(1.6)}
+}
+
+.body{
+    position:absolute;
+    width:145px;
+    height:270px;
+    left:42px;
+    top:130px;
+    border:3px solid #00ffff;
+    border-radius:50px 50px 35px 35px;
+    background:linear-gradient(90deg,#071017,#12323a,#071017);
+    box-shadow:0 0 30px #00ffff44;
+}
+
+.heart{
+    position:absolute;
+    left:53px;
+    top:48px;
+    width:40px;
+    height:40px;
+    background:#ff1744;
+    transform:rotate(-45deg);
+    box-shadow:0 0 25px #ff1744;
+    animation:heartbeat 1s infinite;
+}
+
+.heart::before,
+.heart::after{
+    content:"";
+    position:absolute;
+    width:40px;
+    height:40px;
+    background:#ff1744;
+    border-radius:50%;
+}
+
+.heart::before{top:-20px;left:0}
+.heart::after{left:20px;top:0}
+
+@keyframes heartbeat{
+    0%,100%{transform:rotate(-45deg) scale(1)}
+    15%{transform:rotate(-45deg) scale(1.2)}
+    30%{transform:rotate(-45deg) scale(1)}
+}
+
+.lungs{
+    position:absolute;
+    top:100px;
+    left:25px;
+    width:95px;
+    height:90px;
+}
+
+.lung{
+    position:absolute;
+    width:42px;
+    height:75px;
+    border:2px solid #45aaff;
+    background:#45aaff22;
+    border-radius:50% 50% 45% 45%;
+    box-shadow:0 0 15px #45aaff66;
+    animation:breathe 3s infinite ease-in-out;
+}
+
+.lung:first-child{left:3px}
+.lung:last-child{right:3px}
+
+@keyframes breathe{
+    0%,100%{transform:scaleY(1)}
+    50%{transform:scaleY(1.12)}
+}
+
+.spine{
+    position:absolute;
+    left:69px;
+    top:20px;
+    width:7px;
+    height:220px;
+    background:#00ffff66;
+    box-shadow:0 0 10px #00ffff;
+}
+
+/* BRAZOS */
+.arm{
+    position:absolute;
+    width:35px;
+    height:210px;
+    top:145px;
+    border:2px solid #00ffff;
+    border-radius:30px;
+    background:#071017;
+}
+
+.arm.left{
+    left:2px;
+    transform:rotate(8deg);
+}
+
+.arm.right{
+    right:2px;
+    transform:rotate(-8deg);
+}
+
+/* PIERNAS */
+.leg{
+    position:absolute;
+    width:50px;
+    height:170px;
+    top:380px;
+    border:2px solid #00ffff;
+    border-radius:25px;
+    background:#071017;
+}
+
+.leg.left{left:48px}
+.leg.right{right:48px}
+
+/* INDICADORES */
+.stat{
+    margin-bottom:18px;
+}
+
+.stat-title{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:7px;
+    font-size:13px;
+}
+
+.bar{
+    height:10px;
+    background:#101920;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.fill{
+    height:100%;
+    width:50%;
+    border-radius:10px;
+    transition:1s;
+    background:#00ffff;
+    box-shadow:0 0 12px #00ffff;
+}
+
+/* SUSTANCIAS */
+.chemical{
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    margin:7px 0;
+    background:#091219;
+    border:1px solid #17343c;
+    border-radius:8px;
+}
+
+.chemical span:last-child{
+    color:#00ffff;
+}
+
+/* INFORMACIÓN */
+.info{
+    line-height:1.6;
+    color:#b9cacc;
+}
+
+.info strong{
+    color:#00ffff;
+}
+
+.status{
+    margin-top:15px;
+    padding:12px;
+    border:1px solid #00ffff55;
+    background:#00ffff08;
+    border-radius:8px;
+    color:#00ffff;
+}
+
+/* BOTÓN */
+.reset{
+    display:block;
+    margin:20px auto 0;
+    padding:12px 25px;
+    background:#00ffff11;
+    color:#00ffff;
+    border:1px solid #00ffff;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.reset:hover{
+    background:#00ffff22;
+}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+    .body-area{
+        min-height:550px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🧠 EMOTION LAB 3D</h1>
+    <p>Simulador educativo de emociones y respuestas del organismo</p>
+</header>
+
+<div class="app">
+
+    <div class="emotions">
+        <button onclick="setEmotion('miedo',this)">😨 Miedo</button>
+        <button onclick="setEmotion('alegria',this)">😄 Alegría</button>
+        <button onclick="setEmotion('tristeza',this)">😢 Tristeza</button>
+        <button onclick="setEmotion('frustracion',this)">😤 Frustración</button>
+        <button onclick="setEmotion('sorpresa',this)">😮 Sorpresa</button>
+        <button onclick="setEmotion('verguenza',this)">😳 Vergüenza</button>
+        <button onclick="setEmotion('calma',this)">😌 Calma</button>
+    </div>
+
+    <div class="dashboard">
+
+        <!-- IZQUIERDA -->
+        <div class="panel">
+
+            <h2>⚡ RESPUESTA DEL ORGANISMO</h2>
+
+            <div class="stat">
+                <div class="stat-title">
+                    <span>❤️ Actividad cardíaca</span>
+                    <span id="heartValue">50%</span>
+                </div>
+                <div class="bar">
+                    <div class="fill" id="heartBar"></div>
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">
+                    <span>🫁 Respiración</span>
+                    <span id="breathValue">50%</span>
+                </div>
+                <div class="bar">
+                    <div class="fill" id="breathBar"></div>
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">
+                    <span>⚡ Sistema nervioso</span>
+                    <span id="nerveValue">50%</span>
+                </div>
+                <div class="bar">
+                    <div class="fill" id="nerveBar"></div>
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">
+                    <span>🩸 Activación corporal</span>
+                    <span id="bodyValue">50%</span>
+                </div>
+                <div class="bar">
+                    <div class="fill" id="bodyBar"></div>
+                </div>
+            </div>
+
+            <h2>🧪 MENSAJEROS QUÍMICOS</h2>
+
+            <div class="chemical">
+                <span>Adrenalina</span>
+                <span id="adrenaline">50%</span>
+            </div>
+
+            <div class="chemical">
+                <span>Cortisol</span>
+                <span id="cortisol">50%</span>
+            </div>
+
+            <div class="chemical">
+                <span>Dopamina</span>
+                <span id="dopamine">50%</span>
+            </div>
+
+            <div class="chemical">
+                <span>Serotonina</span>
+                <span id="serotonin">50%</span>
+            </div>
+
+        </div>
+
+
+        <!-- CENTRO -->
+        <div class="panel body-area">
+
+            <div class="human">
+
+                <div class="head">
+                    <div class="brain"></div>
+                </div>
+
+                <div class="body">
+                    <div class="spine"></div>
+                    <div class="heart"></div>
+
+                    <div class="lungs">
+                        <div class="lung"></div>
+                        <div class="lung"></div>
+                    </div>
+                </div>
+
+                <div class="arm left"></div>
+                <div class="arm right"></div>
+
+                <div class="leg left"></div>
+                <div class="leg right"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DERECHA -->
+        <div class="panel">
+
+            <h2>🔬 ANÁLISIS</h2>
+
+            <div class="info">
+
+                <p>
+                    <strong>Emoción:</strong>
+                    <span id="emotionName">Estado neutral</span>
+                </p>
+
+                <br>
+
+                <p>
+                    <strong>¿Qué ocurre?</strong>
+                </p>
+
+                <p id="description">
+                    Selecciona una emoción para observar una representación
+                    simplificada de algunas respuestas corporales.
+                </p>
+
+                <div class="status">
+                    ● SISTEMA ACTIVO
+                    <br>
+                    ● SIMULACIÓN EDUCATIVA
+                </div>
+
+                <br>
+
+                <p>
+                    <strong>🧠 Cerebro</strong><br>
+                    El cerebro procesa la información emocional y coordina
+                    respuestas mediante el sistema nervioso y diferentes
+                    señales químicas.
+                </p>
+
+                <br>
+
+                <p>
+                    <strong>❤️ Corazón</strong><br>
+                    Algunas emociones pueden modificar temporalmente la
+                    frecuencia cardíaca.
+                </p>
+
+                <br>
+
+                <p>
+                    <strong>🫁 Respiración</strong><br>
+                    La respiración puede cambiar dependiendo del estado
+                    emocional y del nivel de activación.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <button class="reset" onclick="resetLab()">
+        ↻ RESTABLECER SIMULACIÓN
+    </button>
+
+</div>
+
+
+<script>
+
+const emotions = {
+
+miedo:{
+    name:"Miedo",
+    heart:88,
+    breath:85,
+    nerve:95,
+    body:92,
+    adrenaline:95,
+    cortisol:85,
+    dopamine:35,
+    serotonin:40,
+    text:"Puede activar la respuesta de lucha o huida. El organismo aumenta su estado de alerta y puede elevar temporalmente la frecuencia cardíaca y la respiración."
+},
+
+alegria:{
+    name:"Alegría",
+    heart:65,
+    breath:60,
+    nerve:55,
+    body:65,
+    adrenaline:45,
+    cortisol:25,
+    dopamine:80,
+    serotonin:80,
+    text:"La alegría puede estar relacionada con circuitos cerebrales de recompensa y con sensaciones de bienestar. Las respuestas exactas dependen de la persona y de la situación."
+},
+
+tristeza:{
+    name:"Tristeza",
+    heart:40,
+    breath:42,
+    nerve:45,
+    body:38,
+    adrenaline:25,
+    cortisol:55,
+    dopamine:35,
+    serotonin:35,
+    text:"La tristeza puede acompañarse de menor activación física, cambios en la energía y modificaciones en diferentes sistemas corporales."
+},
+
+frustracion:{
+    name:"Frustración",
+    heart:78,
+    breath:72,
+    nerve:82,
+    body:80,
+    adrenaline:72,
+    cortisol:70,
+    dopamine:45,
+    serotonin:40,
+    text:"La frustración puede aumentar la activación y la tensión. El organismo puede prepararse para responder ante aquello que percibe como un obstáculo."
+},
+
+sorpresa:{
+    name:"Sorpresa",
+    heart:75,
+    breath:70,
+    nerve:90,
+    body:75,
+    adrenaline:65,
+    cortisol:45,
+    dopamine:55,
+    serotonin:50,
+    text:"La sorpresa genera una respuesta rápida de orientación. El cerebro aumenta temporalmente la atención para determinar qué está ocurriendo."
+},
+
+verguenza:{
+    name:"Vergüenza",
+    heart:68,
+    breath:60,
+    nerve:70,
+    body:65,
+    adrenaline:50,
+    cortisol:60,
+    dopamine:35,
+    serotonin:40,
+    text:"Puede producir aumento de la activación, tensión y cambios físicos perceptibles. Las respuestas varían bastante entre personas."
+},
+
+calma:{
+    name:"Calma",
+    heart:35,
+    breath:30,
+    nerve:25,
+    body:30,
+    adrenaline:15,
+    cortisol:20,
+    dopamine:55,
+    serotonin:65,
+    text:"En un estado tranquilo suele disminuir la activación asociada al estrés y puede predominar una respuesta de relajación."
+}
+
+};
+
+
+function updateBar(id,value){
+
+    document.getElementById(id+"Bar").style.width=value+"%";
+    document.getElementById(id+"Value").textContent=value+"%";
+
+}
+
+
+function setEmotion(type,button){
+
+    const e=emotions[type];
+
+    document.querySelectorAll(".emotions button")
+        .forEach(b=>b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    document.getElementById("emotionName").textContent=e.name;
+
+    document.getElementById("description").textContent=e.text;
+
+    updateBar("heart",e.heart);
+    updateBar("breath",e.breath);
+    updateBar("nerve",e.nerve);
+    updateBar("body",e.body);
+
+    document.getElementById("adrenaline").textContent=e.adrenaline+"%";
+    document.getElementById("cortisol").textContent=e.cortisol+"%";
+    document.getElementById("dopamine").textContent=e.dopamine+"%";
+    document.getElementById("serotonin").textContent=e.serotonin+"%";
+
+    /* Animación del corazón */
+
+    const heart=document.querySelector(".heart");
+
+    heart.style.animationDuration =
+        Math.max(.45,1.6-(e.heart/100))+"s";
+
+    /* Respiración */
+
+    const lungs=document.querySelectorAll(".lung");
+
+    lungs.forEach(l=>{
+        l.style.animationDuration =
+            Math.max(1.3,4-(e.breath/30))+"s";
+    });
+
+}
+
+
+function resetLab(){
+
+    document.querySelectorAll(".emotions button")
+        .forEach(b=>b.classList.remove("active"));
+
+    document.getElementById("emotionName").textContent=
+        "Estado neutral";
+
+    document.getElementById("description").textContent=
+        "Selecciona una emoción para observar una representación simplificada de algunas respuestas corporales.";
+
+    updateBar("heart",50);
+    updateBar("breath",50);
+    updateBar("nerve",50);
+    updateBar("body",50);
+
+    document.getElementById("adrenaline").textContent="50%";
+    document.getElementById("cortisol").textContent="50%";
+    document.getElementById("dopamine").textContent="50%";
+    document.getElementById("serotonin").textContent="50%";
+}
+
+</script>
+
+</body>
+</html>
